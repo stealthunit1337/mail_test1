@@ -5,22 +5,27 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+	<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous"> -->
 	<title>Document</title>
 </head>
 
 <body>
+
 	<container class="container">
 
-		<input type="text" id="myInput" onkeyup="filterFunction()" placeholder="Введите название лота..">
-		<select class="select" id="select" required onchange="selectFunction()">
-			<option id="defatult-option" selected>Выберите подразделение</option>
-		</select>
 
-		<button id="myBtn">Open Modal</button>
+		<div class="filters-block">
+			<input type="text" id="myInput" onkeyup="filterFunction()" placeholder="Введите название лота..">
+			<select class="select" id="select" required onchange="selectFunction()">
+				<option id="defatult-option" selected>Выберите подразделение</option>
+			</select>
+		</div>
 
-		<div id="counter" class="counter">0</div>
+		<div class="modal-block">
+			<div id="counter" class="counter">Выбрано: 0</div>
+			<button disabled id="myBtn" onclick="() => { console.log() }">Отправить заявку</button>
+		</div>
 
 		<div class="grid-header">
 			<div class="header-item"></div>
@@ -41,9 +46,9 @@
 
 			<div class="modal-content">
 				<span class="close">&times;</span>
-				<div class="container mt-5">
+				<div class="container mt-5 modal-wrapper">
 					<h1>Заявка на участие</h1>
-					<form class="row g-3" action="https://formsubmit.co/stealthunit123@gmail.com" method="POST">
+					<form class="modal-wrapper" action="https://formsubmit.co/stealthunit123@gmail.com" method="POST">
 						<!-- Honeypot -->
 						<input type="text" name="_honey" style="display: none;">
 
@@ -52,16 +57,20 @@
 
 						<!-- <input type="hidden" name="_next" value="https://haydn5.github.io/formsubmitdemo/success.html" > -->
 
-						<input type="text" class="form-control" name="Имя" id="firstName" required placeholder="Иван">
+						<input type="text" class="form-control modal-input" name="Имя" id="firstName" required placeholder="Иван">
 
-						<input type="text" class="form-control" name="Фамилия" id="lastName" required placeholder="Иванов">
+						<input type="text" class="form-control modal-input" name="Фамилия" id="lastName" required
+							placeholder="Иванов">
 
-						<input type="email" class="form-control" name="email" id="emailInfo" required
+						<input type="email" class="form-control modal-input" name="email" id="emailInfo" required
 							placeholder="example@gmail.com">
 
-						<input type="text" class="form-control" name="Телефон" id="phoneNumber" placeholder="+1 (415) 867-5309">
+						<input type="text" class="form-control modal-input" name="Телефон" id="phoneNumber"
+							placeholder="+1 (415) 867-5309">
 
-						<button type="submit" class="btn btn-primary">Отправить</button>
+						<input type="text" class="form-control modal-documents" name="Документы" id="documents">
+
+						<button type="submit" class="btn btn-primary modal-button">Отправить</button>
 				</div>
 				</form>
 			</div>
@@ -158,14 +167,31 @@
 	const items = document.getElementsByClassName('grid-item');
 	const input = document.getElementById('myInput');
 	const gridCheckbox = document.getElementsByClassName('grid-checkbox');
+	const counter = document.getElementById('counter')
+	const modalButton = document.getElementById('myBtn')
+	const documents = document.getElementById('documents')
 	// const empty = document.getElementById('empty')
-	const counter = 0
 
+	var counterValue = 0
 	var resultArray = []
 
 	const checkboxFunction = (id) => {
+		if (gridCheckbox[id].checked) {
+			counterValue++
+			counter.textContent = "Выбрано: " + counterValue
+		}
+		else if (!gridCheckbox[id].checked) {
+			counterValue--
+			counter.textContent = "Выбрано: " + counterValue
+		}
+		if (counterValue !== 0) {
+			modalButton.disabled = false
+		}
+		else if (counterValue == 0) {
+			modalButton.disabled = true
+		}
 		for (i of items) {
-			var index = resultArray.indexOf(i);
+			var index = resultArray.indexOf(i.textContent);
 			if (i.id == gridCheckbox[id].id && gridCheckbox[id].checked && i.textContent !== '') {
 				resultArray.push(i.textContent)
 			}
@@ -228,8 +254,18 @@
 	var span = document.getElementsByClassName("close")[0];
 
 	// When the user clicks the button, open the modal 
+
+	const documentsFunction = () => {
+
+		console.log(resultArray.toString());
+		documents.defaultValue = resultArray.toSting()
+	}
+
 	btn.onclick = function () {
 		modal.style.display = "block";
+		console.log('123');
+		console.log(resultArray.join('; '));
+		documents.defaultValue = resultArray.join('; ')
 	}
 
 	// When the user clicks on <span> (x), close the modal
@@ -246,6 +282,14 @@
 </script>
 
 <style>
+	.filters-block {
+		display: flex;
+	}
+
+	.modal-block {
+		display: flex;
+	}
+
 	.empty {
 		display: none;
 	}
@@ -338,7 +382,7 @@
 	/* Modal Content */
 	.modal-content {
 		background-color: #fefefe;
-		margin: auto;
+		/* margin: auto; */
 		padding: 25px;
 		border: 1px solid #888;
 		width: 400px;
@@ -346,7 +390,17 @@
 		flex-direction: column;
 		justify-items: center;
 		align-items: center;
-		position: relative;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	.modal-wrapper {
+		display: flex;
+		flex-direction: column;
+		justify-items: center;
+		align-items: center;
 	}
 
 	.modal-input {
@@ -357,6 +411,10 @@
 		width: 246px;
 		/* min-width: 300px;
   max-width: 300px !important; */
+	}
+
+	.modal-documents {
+		display: none !important;
 	}
 
 	.modal-button {
