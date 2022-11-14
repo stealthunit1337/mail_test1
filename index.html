@@ -255,17 +255,11 @@
 
 	// When the user clicks the button, open the modal 
 
-	const documentsFunction = () => {
-
-		console.log(resultArray.toString());
-		documents.defaultValue = resultArray.toSting()
-	}
-
 	btn.onclick = function () {
 		modal.style.display = "block";
 		console.log('123');
 		console.log(resultArray.join('; '));
-		documents.defaultValue = resultArray.join('; ')
+		documents.defaultValue = resultArray.join(';\r\n')
 	}
 
 	// When the user clicks on <span> (x), close the modal
